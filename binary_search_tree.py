@@ -2,8 +2,9 @@ import random
 
 
 class Node:
-    def __init__(self, value):
+    def __init__(self, value, data):
         self.value = value
+        self.data = data
         self.left = None
         self.right = None
 
@@ -13,9 +14,9 @@ class Binary_search_tree:
         self.root = None
 
     # method to insert a value into the BST, no balancing
-    def insert(self, value):
+    def insert(self, value, data=None):
         if self.root is None:  # no root, create it
-            self.root = Node(value)
+            self.root = Node(value, data)
             return
 
         current = self.root
@@ -30,9 +31,9 @@ class Binary_search_tree:
                 return
 
         if value < parent.value:  # create new node at correct position below parent
-            parent.left = Node(value)
+            parent.left = Node(value, data)
         else:
-            parent.right = Node(value)
+            parent.right = Node(value, data)
 
     # deletes a value, returns True if value was found and deleted,
     # returns False if value wasn't in the tree
@@ -83,7 +84,7 @@ class Binary_search_tree:
                 successor_parent.left = successor.right
         return True
 
-    # searches for the value in root, returns True if found, False if value is not in the tree
+    # searches for the value in root, returns the nodes data if found, False if value is not in the tree
     def search(self, value):
         current = self.root
 
@@ -93,7 +94,7 @@ class Binary_search_tree:
             elif value > current.value:  # bigger, move right
                 current = current.right
             else:  # value found
-                return True
+                return current.value
 
         return False
 
@@ -120,7 +121,7 @@ if __name__ == "__main__":
     for i in range(10):
         value = random.randint(0, 20)
         print(f"inserting {value}")
-        binary.insert(value)
+        binary.insert(value, value)
         binary.print_tree()
     for i in range(5):
         target = random.randint(0, 20)

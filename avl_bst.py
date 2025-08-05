@@ -2,8 +2,9 @@ import random
 
 
 class Node:
-    def __init__(self, parent, value):
+    def __init__(self, parent, value, data):
         self.value = value
+        self.data = data
         self.left = None
         self.right = None
         self.parent = parent
@@ -117,9 +118,9 @@ class AVL_BST:
         return P
 
     # method to insert a value into the BST, calls rebalance on the parent of the placed node after insertion
-    def insert(self, value):
+    def insert(self, value, data=None):
         if self.root is None:  # no root, create it
-            self.root = Node(None, value)
+            self.root = Node(None, value, data)
             return
 
         current = self.root
@@ -135,9 +136,9 @@ class AVL_BST:
                 return
 
         if value < parent.value:  # create new node at correct position below parent
-            parent.left = Node(parent, value)
+            parent.left = Node(parent, value, data)
         else:
-            parent.right = Node(parent, value)
+            parent.right = Node(parent, value, data)
 
         self._rebalance(parent)
 
@@ -192,7 +193,7 @@ class AVL_BST:
         self._rebalance(to_balance)
         return True
 
-    # searches for the value in root, returns True if found, False if value is not in the tree
+    # searches for the value in root, returns Data stored in the node if found, or False if value is not in the tree
     def search(self, value):
         current = self.root
 
@@ -202,7 +203,7 @@ class AVL_BST:
             elif value > current.value:  # bigger, move right
                 current = current.right
             else:  # value found
-                return True
+                return current.data
 
         return False
 
@@ -229,7 +230,7 @@ if __name__ == "__main__":
     for i in range(20):
         value = random.randint(0, 20)
         print(f"inserting {value}")
-        avl.insert(value)
+        avl.insert(value, value)
         avl.print_tree()
     for i in range(5):
         target = random.randint(0, 20)
