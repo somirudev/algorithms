@@ -12,6 +12,7 @@ class Binary_search_tree:
     def __init__(self):
         self.root = None
 
+    # method to insert a value into the BST, no balancing
     def insert(self, value):
         if self.root is None:  # no root, create it
             self.root = Node(value)
@@ -33,6 +34,8 @@ class Binary_search_tree:
         else:
             parent.right = Node(value)
 
+    # deletes a value, returns True if value was found and deleted,
+    # returns False if value wasn't in the tree
     def delete(self, value):
         parent = None
         current = self.root
@@ -80,6 +83,7 @@ class Binary_search_tree:
                 successor_parent.left = successor.right
         return True
 
+    # searches for the value in root, returns True if found, False if value is not in the tree
     def search(self, value):
         current = self.root
 
@@ -93,6 +97,7 @@ class Binary_search_tree:
 
         return False
 
+    # prints the current layout of the tree sideways, (recursively)
     def print_tree(self):
         print()
 
@@ -108,14 +113,6 @@ class Binary_search_tree:
         if self.root:
             draw(self.root)
         print()
-
-    def _get_max_depth(self, node):
-        if node is None:
-            return 0
-        else:
-            left_depth = self._get_max_depth(node.left)
-            right_depth = self._get_max_depth(node.right)
-            return 1 + max(left_depth, right_depth)
 
 
 if __name__ == "__main__":
