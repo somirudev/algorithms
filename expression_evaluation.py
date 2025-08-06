@@ -1,8 +1,9 @@
 import math
 
-numbers = set("1234567890.")
+numbers = set("1234567890.pe")
 precedence = {
     "(": 1000,
+    "!": 4,
     "w": 4,
     "l": 4,
     "s": 4,
@@ -49,96 +50,125 @@ replacements = {
 def expression_evaluation(input_string):
     operand_list = []
     operator_list = []
+
+    # pre-processing to make all operators 1 character only
     for old, new in replacements.items():
         input_string = input_string.replace(old, new)
-    previous_character = ""
-    for i in range(len(input_string)):
-        # handle operands, including e, pi and floats
-        if input_string[i] == "e":
-            operand_list.append(math.e)
-        elif input_string[i] == "p":
-            operand_list.append(math.pi)
-        elif input_string[i] in numbers:
-            if previous_character in numbers:
-                operand_list[-1] += input_string[i]
+
+    i = 0
+    while i < len(input_string):
+        char = input_string[i]
+        is_unary_minus = char == "-" and (
+            i == 0
+            or input_string[i - 1] in operators
+            and input_string[i - 1] not in (")", "!")
+        )
+
+        # handle unary minus
+        if is_unary_minus:
+            j = i + 1
+            start_number_index = j
+            while j < len(input_string) and input_string[j] in numbers:
+                j += 1
+            num_str = input_string[start_number_index:j]
+            if num_str == "e":
+                operand_list.append(-math.e)
+            elif num_str == "p":
+                operand_list.append(-math.pi)
             else:
-                operand_list.append(input_string[i])
+                operand_list.append(float("-" + num_str))
+            i = j
+            continue
+
+        # handle operands, including e, pi and floats
+        if char == "e":
+            operand_list.append(math.e)
+            i += 1
+        elif char == "p":
+            operand_list.append(math.pi)
+            i += 1
+        elif char in numbers:
+            start_number_index = i
+            while i < len(input_string) and input_string[i] in numbers:
+                i += 1
+            operand_list.append(float(input_string[start_number_index:i]))
+
+        # handle opening brackets
+        elif char == "(":
+            operator_list.append(char)
+            i += 1
+
         # handle closing brackets
-        elif input_string[i] == ")":
-            operator = operator_list.pop()
-            while not operator == "(":
+        elif char == ")":
+            while operator_list and not operator_list[-1] == "(":
+                operator = operator_list.pop()
                 if operator in unary_operators:
                     if len(operand_list) < 1:
-                        raise ValueError(f"not enough operands for operator {operator}")
-                    value = float(operand_list.pop())
+                        raise ValueError(
+                            f"not enough operands for unary operator {operator}"
+                        )
+                    value = operand_list.pop()
                     operand_list.append(operators[operator](value))
                 else:
                     if len(operand_list) < 2:
-                        raise ValueError(f"not enough operands for operator {operator}")
-                    value2 = float(operand_list.pop())
-                    value1 = float(operand_list.pop())
+                        raise ValueError(
+                            f"not enough operands for binaryoperator {operator}"
+                        )
+                    value2 = operand_list.pop()
+                    value1 = operand_list.pop()
                     operand_list.append(operators[operator](value1, value2))
-                operator = operator_list.pop()
-        # handle factorial
-        elif input_string[i] == "!":
-            operator = input_string[i]
-            if len(operand_list) < 1:
-                raise ValueError(f"not enough operands for operator {operator}")
-            value = int(operand_list.pop())
-            operand_list.append(operators[operator](value))
+            if not operator_list or operator_list.pop() != "(":
+                raise ValueError("Mismatched parentheses")
+            i += 1
+
         # handle other operands according to precedence (if lower than on stack, do math, if higher, add onto stack until needed)
-        elif input_string[i] in operators:
-            if operator_list:
-                if (
-                    precedence[input_string[i]] > precedence[operator_list[-1]]
-                    or operator_list[-1] == "("
-                ):
-                    operator_list.append(input_string[i])
+        elif char in operators:
+            while (
+                operator_list
+                and operator_list[-1] != "("
+                and precedence.get(char, 0) <= precedence.get(operator_list[-1], 0)
+            ):
+                operator = operator_list.pop()
+                if operator in unary_operators:
+                    if len(operand_list) < 1:
+                        raise ValueError(
+                            f"not enough operands for unary operator {operator}"
+                        )
+                    value = operand_list.pop()
+                    operand_list.append(operators[operator](value))
                 else:
-                    operator = operator_list.pop()
-                    if operator in unary_operators:
-                        if len(operand_list) < 1:
-                            raise ValueError(
-                                f"not enough operands for operator {operator}"
-                            )
-                        value = float(operand_list.pop())
-                        operand_list.append(operators[operator](value))
-                    else:
-                        if len(operand_list) < 2:
-                            raise ValueError(
-                                f"not enough operands for operator {operator}"
-                            )
-                        value2 = float(operand_list.pop())
-                        value1 = float(operand_list.pop())
-                        operand_list.append(operators[operator](value1, value2))
-                    operator_list.append(input_string[i])
-            else:
-                operator_list.append(input_string[i])
+                    if len(operand_list) < 2:
+                        raise ValueError(
+                            f"not enough operands for binary operator {operator}"
+                        )
+                    value2 = operand_list.pop()
+                    value1 = operand_list.pop()
+                    operand_list.append(operators[operator](value1, value2))
+            operator_list.append(char)
+            i += 1
 
         else:
-            raise ValueError("Not a valid expression")
-
-        previous_character = input_string[i]
-
-        print(operator_list)
-        print(operand_list)
+            raise ValueError("Not a valid token: {char}")
 
     # input_string empty, time to do remaining calculations
     while operator_list:
+        if operator_list[-1] == "(":
+            raise ValueError("Mismatched parentheses")
+
         operator = operator_list.pop()
         if operator in unary_operators:
             if len(operand_list) < 1:
-                raise ValueError(f"not enough operands for operator {operator}")
-            value = float(operand_list.pop())
+                raise ValueError(f"not enough operands for unary operator {operator}")
+            value = operand_list.pop()
             operand_list.append(operators[operator](value))
         else:
             if len(operand_list) < 2:
-                raise ValueError(f"not enough operands for operator {operator}")
-            value2 = float(operand_list.pop())
-            value1 = float(operand_list.pop())
+                raise ValueError(f"not enough operands for binary operator {operator}")
+            value2 = operand_list.pop()
+            value1 = operand_list.pop()
             operand_list.append(operators[operator](value1, value2))
-        print(operator_list)
-        print(operand_list)
+    if len(operand_list) != 1:
+        raise ValueError("Invalid expression format")
     return operand_list[0]
 
 
