@@ -39,8 +39,8 @@ def expression_evaluation(input_string):
             while not operator == "(":
                 if len(operand_list) < 2:
                     raise ValueError(f"not enough operands for operator {operator}")
-                value1 = int(operand_list.pop())
-                value2 = int(operand_list.pop())
+                value1 = float(operand_list.pop())
+                value2 = float(operand_list.pop())
                 operand_list.append(operators[operator](value2, value1))
                 operator = operator_list.pop()
         elif input_string[i] in operators:
@@ -52,8 +52,8 @@ def expression_evaluation(input_string):
                     operator_list.append(input_string[i])
                 else:
                     operator = operator_list.pop()
-                    value1 = int(operand_list.pop())
-                    value2 = int(operand_list.pop())
+                    value1 = float(operand_list.pop())
+                    value2 = float(operand_list.pop())
                     operand_list.append(operators[operator](value2, value1))
                     operator_list.append(input_string[i])
             else:
@@ -67,8 +67,8 @@ def expression_evaluation(input_string):
         operator = operator_list.pop()
         if len(operand_list) < 2:
             raise ValueError(f"not enough operands for operator {operator}")
-        value1 = int(operand_list.pop())
-        value2 = int(operand_list.pop())
+        value1 = float(operand_list.pop())
+        value2 = float(operand_list.pop())
         operand_list.append(operators[operator](value2, value1))
         print(operator_list)
         print(operand_list)
