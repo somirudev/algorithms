@@ -30,7 +30,7 @@ class AVL_BST:
     # helper function to rebalance the tree from node up parent by parent until root
     def _rebalance(self, node):
         while node:
-            node.height = 1 + max(self._get_height(node.left), self._get_height(node.right) # update height
+            node.height = 1 + max(self._get_height(node.left), self._get_height(node.right)) # update height
 
             if self._get_balance(node) > 1:  # left side is higher
                 if node.left and self._get_balance(node.left) < 0:
