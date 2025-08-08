@@ -9,7 +9,6 @@ class Node:
         self.right = None
         self.parent = parent
         self.height = 1
-        self.balance = 0
 
 
 class AVL_BST:
@@ -28,26 +27,18 @@ class AVL_BST:
             return 0
         return self._get_height(node.left) - self._get_height(node.right)
 
-    # helper function, updates node's height and balance
-    def _update_node(self, node):
-        if node:
-            node.height = 1 + max(
-                self._get_height(node.left), self._get_height(node.right)
-            )
-            node.balance = self._get_balance(node)
-
     # helper function to rebalance the tree from node up parent by parent until root
     def _rebalance(self, node):
         while node:
-            self._update_node(node)  # update height & balance
+            node.height = 1 + max(self._get_height(node.left), self._get_height(node.right) # update height
 
-            if node.balance > 1:  # left side is higher
-                if node.left and node.left.balance < 0:
+            if self._get_balance(node) > 1:  # left side is higher
+                if node.left and self._get_balance(node.left) < 0:
                     node.left = self._left_rotation(node.left)
                 node = self._right_rotation(node)
 
-            elif node.balance < -1:  # right side is higher
-                if node.right and node.right.balance > 0:
+            elif self._get_balance(node) < -1:  # right side is higher
+                if node.right and self._get_balance(node.right) > 0:
                     node.right = self._right_rotation(node.right)
                 node = self._left_rotation(node)
 
@@ -80,8 +71,8 @@ class AVL_BST:
             self.root = P
 
         # update heights and balances of changed nodes
-        self._update_node(C)
-        self._update_node(P)
+        C.height = 1 + max(self._get_height(C.left), self._get_height(C.right)) 
+        P.height = 1 + max(self._get_height(P.left), self._get_height(P.right)) 
         # return new root of this subtree
         return P
 
@@ -112,8 +103,8 @@ class AVL_BST:
             self.root = P
 
         # update heights and balances of changed nodes
-        self._update_node(C)
-        self._update_node(P)
+        C.height = 1 + max(self._get_height(C.left), self._get_height(C.right)) 
+        P.height = 1 + max(self._get_height(P.left), self._get_height(P.right)) 
         # return new root of this subtree
         return P
 
