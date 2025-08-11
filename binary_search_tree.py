@@ -9,7 +9,7 @@ class Node:
         self.right = None
 
 
-class Binary_search_tree:
+class BinarySearchTree:
     def __init__(self):
         self.root = None
 
@@ -117,7 +117,7 @@ class Binary_search_tree:
 
 
 if __name__ == "__main__":
-    binary = Binary_search_tree()
+    binary = BinarySearchTree()
     for i in range(10):
         value = random.randint(0, 20)
         print(f"inserting {value}")

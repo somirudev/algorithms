@@ -71,8 +71,8 @@ class AVL_BST:
             self.root = P
 
         # update heigh tof changed nodes
-        C.height = 1 + max(self._get_height(C.left), self._get_height(C.right)) 
-        P.height = 1 + max(self._get_height(P.left), self._get_height(P.right)) 
+        C.height = 1 + max(self._get_height(C.left), self._get_height(C.right))
+        P.height = 1 + max(self._get_height(P.left), self._get_height(P.right))
         # return new root of this subtree
         return P
 
@@ -103,8 +103,8 @@ class AVL_BST:
             self.root = P
 
         # update height of changed nodes
-        C.height = 1 + max(self._get_height(C.left), self._get_height(C.right)) 
-        P.height = 1 + max(self._get_height(P.left), self._get_height(P.right)) 
+        C.height = 1 + max(self._get_height(C.left), self._get_height(C.right))
+        P.height = 1 + max(self._get_height(P.left), self._get_height(P.right))
         # return new root of this subtree
         return P
 
