@@ -19,8 +19,7 @@ def binary_search(sorted_list, target):
 
 
 if __name__ == "__main__":
-    random_list = [random.randrange(0, 10) for i in range(10)]
-    random_list = sorted(random_list)
+    random_list = sorted([random.randrange(0, 10) for _ in range(10)])
     random_target = random.randint(0, 9)
     print(f"searching for {random_target} in {random_list}")
     print(
