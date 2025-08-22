@@ -101,13 +101,18 @@ class Linked_list:
             current_node = next_node
         self.first_node = prev_node
 
-    def print_ll(self):
-        print("[", end="")
+    def __iter__(self):
         node = self.first_node
-        while node is not self.last_node:
-            print(node.value, end=", ")
+        while node is not None:
+            yield node
             node = node.next
-        print(str(node.value) + "]")
+
+    def __repr__(self):
+        nodes = []
+        for node in self:
+            nodes.append(str(node.value))
+            node = node.next
+        return "[" + ", ".join(nodes) + "]"
 
 
 if __name__ == "__main__":
@@ -118,48 +123,49 @@ if __name__ == "__main__":
     string_2 = "World"
     print(f"Appending '{string_2}'")
     ll.append(string_2)
-    ll.print_ll()
+    print(ll)
 
     print(f"deleting '{string_2}'- deleted at index: {ll.delete(string_2)}")
-    ll.print_ll()
+    print(ll)
 
     value = 6
     index = 1
     print(f"inserting '{value}' at index {index}")
     ll.insert(value, index)
-    ll.print_ll()
+    print(ll)
+
     value = (True, False)
     index = 0
     print(f"pushing {value}")
     ll.push(value)
-    ll.print_ll()
 
+    print(ll)
     char = "!"
     index = -3
     try:
         print(f"inserting '{char}' at index {index}")
         ll.insert(char, index)
-        ll.print_ll()
+        print(ll)
     except Exception as e:
         print(e)
     index = 30
     try:
         print(f"inserting '{char}' at index {index}")
         ll.insert(char, index)
-        ll.print_ll()
+        print(ll)
     except Exception as e:
         print(e)
     index = ll.length
     print(f"inserting '{char}' at index {index}")
     ll.insert(char, index)
-    ll.print_ll()
+    print(ll)
 
     print("Reversing list")
     ll.reverse()
-    ll.print_ll()
+    print(ll)
     print(f"searching for '{string_1}': found at index: {ll.search(string_1)}")
     string_3 = "Pancake"
     print(f"searching for '{string_3}': found at index: {ll.search(string_3)}")
     print(f"linked_list.pop() returns: {ll.pop()}")
-    ll.print_ll()
+    print(ll)
     print(f"list length is {ll.length}")

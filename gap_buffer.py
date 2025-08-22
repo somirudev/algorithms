@@ -53,27 +53,41 @@ class Gap_buffer:
         else:
             self.gap_start = 0
 
-    # prints both the stored text and the actual list to show where the gap currently is
-    def print_gb(self):
-        print(
-            "".join(self.buffer[: self.gap_start])
-            + "".join(self.buffer[self.gap_end + 1 :])
-        )
-        print(f"Actual list: {self.buffer}")
-        print()
+    def __iter__(self):
+        index = 0
+        while index < len(self.buffer):
+            if self.gap_start <= index <= self.gap_end:
+                index += 1
+                continue
+            yield self.buffer[index]
+            index += 1
+
+    def __repr__(self):
+        return f"{self.buffer}"
+
+    def __str__(self):
+        return "".join(self)
 
 
 if __name__ == "__main__":
     gb = Gap_buffer()
     text = "Hello World"
     print(f"inserting '{text}'")
-    gb.insert("Hello World!")
-    gb.print_gb()
-    movement = -5
+    gb.insert(text)
+    print(gb)
+    print(repr(gb))
+    movement = -4
     print(f"Moving cursor by {movement}")
     gb.move_cursor(movement)
-    gb.print_gb()
+    print(gb)
+    print(repr(gb))
     count = 3
     print(f"deleting {count} elements")
     gb.delete(count)
-    gb.print_gb()
+    print(gb)
+    print(repr(gb))
+    text = "inserting this many letters should expand the buffersize"
+    print(f"inserting '{text}'")
+    gb.insert(text)
+    print(gb)
+    print(repr(gb))
