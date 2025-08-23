@@ -105,11 +105,11 @@ class BinarySearchTree:
         def draw(node, indent=""):
             if node is None:
                 return
-            if node.left:
-                draw(node.left, indent + "    ")
-            print(indent + "|" + str(node.value) + "<")
             if node.right:
                 draw(node.right, indent + "    ")
+            print(indent + "|" + str(node.value) + "<")
+            if node.left:
+                draw(node.left, indent + "    ")
 
         if self.root:
             draw(self.root)

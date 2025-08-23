@@ -16,6 +16,7 @@ class Red_Black_BST:
         self.nil.red = False
         self.nil.left = None
         self.nil.right = None
+        self.nil.parent = None
         self.root = self.nil
 
     # method to insert a value into the BST, calling balancing according to Red/Black BST afterwards
@@ -203,12 +204,13 @@ class Red_Black_BST:
             old.parent.left = new
         else:
             old.parent.right = new
-        if new is not self.nil:
-            new.parent = old.parent
+        new.parent = old.parent
 
     def fix_delete(self, node_to_fix):
         while node_to_fix is not self.root and not node_to_fix.red:
             parent = node_to_fix.parent
+            if parent is None:
+                break
 
             if node_to_fix is parent.left:
                 sibling = parent.right
@@ -291,30 +293,137 @@ class Red_Black_BST:
         def draw(node, indent=""):
             if node is None:
                 return
-            if node.left:
-                draw(node.left, indent + "      ")
-            print(f"{indent}|{str(node.value)}, {'R' if node.red else 'B'}<")
             if node.right:
                 draw(node.right, indent + "      ")
+            print(f"{indent}|{str(node.value)}, {'R' if node.red else 'B'}<")
+            if node.left:
+                draw(node.left, indent + "      ")
 
         if self.root:
             draw(self.root)
         print()
 
 
+def print_test(name, tree):
+    print(f"TEST: {name}")
+    tree.print_tree()
+
+
 if __name__ == "__main__":
-    binary = Red_Black_BST()
-    for i in range(10):
-        value = random.randint(0, 20)
-        print(f"inserting {value}")
-        binary.insert(value)
-        binary.print_tree()
-    for i in range(5):
-        target = random.randint(0, 20)
-        print(f"searching for {target}")
-        print(f"found: {binary.search(target)}")
-    for i in range(5):
-        to_delete = random.randint(0, 20)
-        print(f"deleting {to_delete}")
-        print(f"deleted: {binary.delete(to_delete)}")
-        binary.print_tree()
+    rbt = Red_Black_BST()
+    rbt.insert(10)
+    print_test("insert root (10), should be black", rbt)
+    rbt.delete(10)
+    print_test("delete root (10), should be empty", rbt)
+    rbt.insert(10)
+    rbt.insert(5)
+    print_test("re-insert root 10 and insert left child (5), should be red", rbt)
+    rbt.insert(15)
+    print_test("insert right child (15), should be red", rbt)
+    rbt.delete(10)
+    print_test("delete root (10) with children, replace with child", rbt)
+    rbt.delete(5)
+    rbt.delete(15)
+    rbt.insert(10)
+    rbt.insert(5)
+    rbt.insert(15)
+    rbt.insert(3)
+    print_test(
+        "remake 10/5/15 tree & insert 3, should trigger recolor because parent and uncle are red",
+        rbt,
+    )
+    rbt.insert(1)
+    print_test("insert 1, should trigger left-left case, right rotation", rbt)
+    rbt.insert(20)
+    rbt.insert(25)
+    print_test("insert 20 & 25, should trigger right-right case, left rotation", rbt)
+    rbt_lr = Red_Black_BST()
+    for val in [10, 5, 15, 3]:
+        rbt_lr.insert(val)
+    rbt_lr.print_tree()
+    rbt_lr.insert(4)
+    print_test("insert 4, should trigger left-right case, double rotation", rbt_lr)
+    rbt_rl = Red_Black_BST()
+    for val in [10, 5, 15, 17]:
+        rbt_rl.insert(val)
+    rbt_rl.print_tree()
+    rbt_rl.insert(16)
+    print_test("insert 16, should trigger right-left case, double rotation", rbt_rl)
+    rbt_del = Red_Black_BST()
+    for val in [10, 5, 15, 3, 12, 17, 1, 20, 25, 6, 8, 11, 14, 16, 18, 22]:
+        rbt_del.insert(val)
+    print_test("new tree for deletion tests", rbt_del)
+    rbt_del.delete(22)
+    print_test("deleting 22, red leaf, no actions needed", rbt_del)
+    rbt_del.insert(22)
+    rbt_del.delete(25)
+    print_test(
+        "reinsert 22 and delete 25, black node with red child, replace & recolor",
+        rbt_del,
+    )
+    rbt_del.delete(15)
+    print_test("delete 15, successor replacement (16)", rbt_del)
+    rbt_del.delete(1)
+    print_test(
+        "delete 1, imbalance in black nodes in path from root, sibling black, nephews black, rotation and recolor",
+        rbt_del,
+    )
+    # red sibling fix_delete
+    rbt_del2 = Red_Black_BST()
+    for val in [10, 5, 15, 12, 18, 11, 13]:
+        rbt_del2.insert(val)
+    rbt_del2.print_tree()
+    rbt_del2.delete(5)
+    print_test("delete 5, red sibling case", rbt_del2)
+
+    rbt_del3 = Red_Black_BST()
+    for val in [10, 5, 20, 15, 30]:
+        rbt_del3.insert(val)
+    rbt_del3.root.left.red = False
+    rbt_del3.root.right.red = True
+    rbt_del3.root.right.right.red = False
+    rbt_del3.root.right.left.red = False
+    rbt_del3.print_tree()
+    rbt_del3.delete(15)
+    print_test("delete 15, black sibling case, single recolor", rbt_del3)
+
+    rbt_del4 = Red_Black_BST()
+    for val in [10, 5, 20, 1, 7, 15, 30]:
+        rbt_del4.insert(val)
+    rbt_del4.root.right.right.red = False
+    rbt_del4.root.right.left.red = False
+    rbt_del4.root.left.right.red = False
+    rbt_del4.root.left.left.red = False
+    rbt_del4.print_tree()
+    rbt_del4.delete(15)
+    print_test(
+        "delete 15, black sibling, black nephews, moving up the tree multiple times case",
+        rbt_del4,
+    )
+
+    rbt_del5 = Red_Black_BST()
+    for val in [10, 5, 20, 1, 7, 15, 30, 25, 40]:
+        rbt_del5.insert(val)
+    rbt_del5.root.right.right.right.red = False
+    rbt_del5.root.right.right.left.red = False
+    rbt_del5.root.right.right.red = True
+    rbt_del5.root.right.left.red = False
+    rbt_del5.root.left.right.red = False
+    rbt_del5.root.left.left.red = False
+    rbt_del5.print_tree()
+    rbt_del5.delete(15)
+    print_test(
+        "delete 15, red sibling, black nephews, rotate and recolor until 25 is the only red node",
+        rbt_del5,
+    )
+    rbt_del5.insert(20)
+    rbt_del5.insert(28)
+    rbt_del5.root.right.left.red = True
+    rbt_del5.root.right.left.right.red = False
+    rbt_del5.root.right.left.left.red = False
+    rbt_del5.print_tree()
+    rbt_del5.delete(1)
+    print_test(
+        "delete 1, multiple rotations and recoloring, finishing with only node 7 as red",
+        rbt_del5,
+    )

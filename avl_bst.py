@@ -207,11 +207,11 @@ class AVL_BST:
         def draw(node, indent=""):
             if node is None:
                 return
-            if node.left:
-                draw(node.left, indent + "    ")
-            print(f"{indent}|{str(node.value)}<")
             if node.right:
                 draw(node.right, indent + "    ")
+            print(f"{indent}|{str(node.value)}<")
+            if node.left:
+                draw(node.left, indent + "    ")
 
         if self.root:
             draw(self.root)
