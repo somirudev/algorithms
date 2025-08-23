@@ -107,7 +107,7 @@ class Linked_list:
             yield node
             node = node.next
 
-    def __repr__(self):
+    def __str__(self):
         nodes = []
         for node in self:
             nodes.append(str(node.value))
